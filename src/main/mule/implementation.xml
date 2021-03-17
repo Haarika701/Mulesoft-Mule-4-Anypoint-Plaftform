@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:american-flights-api="http://www.mulesoft.org/schema/mule/american-flights-api" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/american-flights-api http://www.mulesoft.org/schema/mule/american-flights-api/current/mule-american-flights-api.xsd">
+	<american-flights-api:config name="American_Flights_API_Config" doc:name="American Flights API Config" doc:id="8cb3693e-2d3d-49bb-8005-5c07040d4d22" property_host="training4-american-api.cloudhub.io" property_port="80" property_protocol="http" />
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="4cb7e774-3777-4ccb-903f-968d8b8326f1" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="getFlights" doc:id="35b7cd58-cb73-40e2-abad-90028ec37ff6" >
+		<http:listener doc:name="/get" doc:id="a5fa76ab-1231-4fb6-b8cb-5265f79aa135" config-ref="HTTP_Listener_config1" path="/american"/>
+		<flow-ref doc:name="setCode" doc:id="7f5a3404-d630-4bb0-aee3-3d1fd9e5f59d" name="setCode"/>
+		<american-flights-api:get-flights doc:name="Get flights" doc:id="b4902980-db47-40c9-aef7-b1b3a568927e" config-ref="American_Flights_API_Config1" client-id="${american.client_id}" client-secret="${american.client_secret}" destination="#[vars.code]"/>
+	</flow>
+	<sub-flow name="setCode" doc:id="155e7161-0b14-4015-a141-fc0e3a29c00b" >
+		<set-variable value="#[message.attributes.queryParams.code default'SFO']" doc:name="setCode" doc:id="7430d501-470d-44b3-a093-915afde49801" variableName="code"/>
+	</sub-flow>
+</mule>
